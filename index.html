@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100 Mexicanos Dijeron</title>
+    <title>100 Mexicanos - Mega Edición</title>
     <style>
         body {
             font-family: 'Arial Black', sans-serif;
@@ -13,478 +13,397 @@
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        h1 {
-            color: #FFD700;
-            text-shadow: 4px 4px #000;
-            font-size: 3em;
-            margin-bottom: 10px;
+        /* --- INPUTS Y PANTALLAS --- */
+        .screen { display: none; flex-direction: column; align-items: center; min-height: 90vh; }
+        .active { display: flex; }
+
+        h1 { color: #FFD700; text-shadow: 4px 4px #000; font-size: 3em; margin-bottom: 20px; }
+
+        .setup-box {
+            background: rgba(0, 51, 102, 0.95); padding: 40px; border-radius: 20px;
+            border: 4px solid #FFD700; width: 80%; max-width: 600px;
         }
+        input.config-input { padding: 15px; font-size: 1.5em; width: 80%; margin: 10px 0; text-align: center; border-radius: 10px; border: none;}
 
         /* --- MARCADOR --- */
         .scoreboard {
-            display: flex;
-            justify-content: space-between;
-            width: 90%;
-            max-width: 800px;
-            margin: 0 auto 20px auto;
-            background: #003366;
-            padding: 15px;
-            border-radius: 15px;
-            border: 3px solid #FFD700;
+            display: flex; justify-content: space-between; width: 95%; max-width: 1000px;
+            margin: 0 auto 10px auto; background: linear-gradient(to bottom, #003366, #001f3f);
+            padding: 10px; border-radius: 15px; border: 3px solid #FFD700;
         }
-
-        .team-score {
-            text-align: center;
-        }
-
-        .score-display {
-            font-size: 3em;
-            background: black;
-            color: #ff0000;
-            padding: 10px 30px;
-            border: 2px solid grey;
-            font-family: 'Courier New', monospace;
-            border-radius: 10px;
-        }
+        .score-display { font-size: 3em; background: black; color: #ff3333; padding: 5px 20px; border-radius: 10px; font-family: monospace; border: 2px solid #555;}
+        .team-name-display { color: #7FDBFF; font-size: 1.2em; text-transform: uppercase; margin:0;}
 
         /* --- PREGUNTA --- */
         .question-box {
-            background: linear-gradient(to bottom, #0074D9, #001f3f);
-            padding: 20px;
-            border-radius: 20px;
-            border: 4px solid white;
-            font-size: 1.8em;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #004080; padding: 15px 30px; border-radius: 50px; border: 3px solid white;
+            font-size: 1.6em; margin-bottom: 20px; text-transform: uppercase; max-width: 90%;
+            box-shadow: 0 5px 15px black; min-height: 60px; display: flex; align-items: center; justify-content: center;
         }
 
-        /* --- TABLERO DE RESPUESTAS --- */
-        .board {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Dos columnas */
-            gap: 15px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
+        /* --- TABLERO --- */
+        .board { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 1000px; width: 100%; margin: 0 auto; }
         .answer-card {
-            background: linear-gradient(to bottom, #004080, #001f3f);
-            border: 2px solid white;
-            height: 70px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            cursor: pointer;
-            position: relative;
-            perspective: 1000px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background: #003366; border: 2px solid white; height: 75px; border-radius: 10px;
+            display: flex; align-items: center; position: relative; overflow: hidden;
         }
-
-        .answer-card:hover { transform: scale(1.02); }
-
-        /* Estilos para ocultar/mostrar */
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
         .hidden-cover {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(
-                45deg,
-                #003366,
-                #003366 10px,
-                #002244 10px,
-                #002244 20px
-            );
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            color: #FFD700;
-            z-index: 2;
-            transition: transform 0.6s;
-            backface-visibility: hidden;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, #004080, #004080 10px, #002244 10px, #002244 20px);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3em; color: #FFD700; z-index: 2; transition: transform 0.6s;
+            border: 1px solid #0055aa; text-shadow: 2px 2px black;
         }
+        .revealed .hidden-cover { transform: rotateX(180deg); opacity: 0; }
+        .card-inner { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box;}
+        .answer-text { font-size: 1.3em; text-transform: uppercase; text-align: left; width: 85%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .answer-points { font-size: 1.8em; color: #FFD700; }
 
-        .revealed .hidden-cover {
-            transform: rotateX(180deg); /* Efecto voltear */
-            opacity: 0;
+        /* --- AREA DE RESPUESTA --- */
+        .answer-input-area {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #111; padding: 20px; border-top: 3px solid #FFD700;
+            display: flex; justify-content: center; gap: 10px; z-index: 50; flex-wrap: wrap;
         }
-
-        .answer-text { font-size: 1.5em; text-transform: uppercase; }
-        .answer-points { font-size: 1.8em; color: #FFD700; border-left: 2px solid white; padding-left: 15px; }
-
-        /* --- BOTONES DE CONTROL --- */
-        .controls {
-            margin-top: 40px;
-            padding: 20px;
-            background: #111;
-            border-top: 2px solid #333;
+        #playerInput {
+            font-size: 2em; padding: 10px; width: 50%; max-width: 500px;
+            text-transform: uppercase; border-radius: 10px; border: none; text-align: center;
         }
-
-        button {
-            padding: 10px 20px;
-            font-size: 1.2em;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            border: none;
-            font-weight: bold;
+        .btn-send { background: #2ECC40; color: white; font-size: 1.5em; padding: 10px 30px; border: none; border-radius: 10px; cursor: pointer;}
+        
+        .admin-controls { margin-top: 10px; display: flex; gap: 10px; justify-content: center; align-items: center; width: 100%;}
+        .btn-small { background: #555; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 0.9em;}
+        
+        .btn-reveal-all {
+            display: none; 
+            background: #3498db; color: white; font-weight: bold; font-size: 1em;
+            padding: 10px 20px; border: 2px solid white; border-radius: 10px;
+            animation: pulse 1s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .btn-x { background-color: #ff4136; color: white; width: 80px; height: 80px; font-size: 2em; border-radius: 50%; border: 4px solid #8a1c14;}
-        .btn-next { background-color: #2ECC40; color: white; }
-        .btn-score { background-color: #FFDC00; color: black; }
-
-        /* --- X GIGANTE (STRIKE) --- */
+        /* --- STRIKES --- */
         .strike-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100;
         }
-        .big-x {
-            font-size: 25vw;
-            color: red;
-            font-family: sans-serif;
-            text-shadow: 0 0 20px white;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-        /* Indicador de Strike pequeño */
-        .strikes-container { display: flex; justify-content: center; margin-bottom: 10px; height: 50px;}
-        .mini-x { color: red; font-size: 3em; margin: 0 10px; opacity: 0.2; }
-        .mini-x.active { opacity: 1; text-shadow: 0 0 10px red; }
+        .big-x { font-size: 25vw; color: red; text-shadow: 0 0 50px white; animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px) rotate(-5deg);} 75% {transform: translateX(10px) rotate(5deg);} }
+        .strikes-container { display: flex; justify-content: center; margin-bottom: 5px; height: 50px; }
+        .mini-x { color: #440000; font-size: 3em; margin: 0 10px; opacity: 0.3; }
+        .mini-x.active { opacity: 1; color: red; }
+        
+        button { cursor: pointer; }
+        .btn-start { background: #FFD700; color: black; font-size: 1.5em; padding: 15px 40px; border: none; border-radius: 10px; margin-top:20px;}
+        .btn-assign { background: #FFD700; color: black; border: none; padding: 8px; border-radius: 5px; width: 100%; font-weight: bold; margin-top:5px; font-size: 1.1em;}
 
     </style>
 </head>
 <body>
 
-    <h1>100 MEXICANOS DIJERON</h1>
-
-    <div class="scoreboard">
-        <div class="team-score">
-            <h3 style="margin:0; color:#7FDBFF">EQUIPO 1</h3>
-            <div id="score1" class="score-display">0</div>
-            <button onclick="addPoints(1)" class="btn-score" style="font-size:0.8em; margin-top:5px;">+ Asignar Puntos</button>
+    <div id="screenSetup" class="screen active">
+        <h1>100 MEXICANOS DIJERON</h1>
+        <div class="setup-box">
+            <h2>Configuración</h2>
+            <input type="text" id="inputTeam1" class="config-input" placeholder="Nombre Equipo 1" value="Equipo 1"><br>
+            <input type="text" id="inputTeam2" class="config-input" placeholder="Nombre Equipo 2" value="Equipo 2"><br>
+            <select id="inputRounds" class="config-input">
+                <option value="5">5 Rondas (Normal)</option>
+                <option value="10">10 Rondas (Larga)</option>
+                <option value="15">15 Rondas (Extendida)</option>
+                <option value="20">20 Rondas (Maratón)</option>
+            </select><br>
+            <button onclick="startGame()" class="btn-start">🔊 INICIAR JUEGO</button>
         </div>
+    </div>
+
+    <div id="screenGame" class="screen">
+        <div style="margin-top:10px;">RONDA <span id="roundIndicator">1</span></div>
+
+        <div class="scoreboard">
+            <div class="team-score">
+                <h3 id="name1Display" class="team-name-display">EQ 1</h3>
+                <div id="score1" class="score-display">0</div>
+                <button onclick="assignPoints(1)" class="btn-assign">GANÓ LA RONDA</button>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; justify-content:center;">
+                 <div id="roundPoints" style="font-size: 4em; color: white;">0</div>
+            </div>
+
+            <div class="team-score">
+                <h3 id="name2Display" class="team-name-display">EQ 2</h3>
+                <div id="score2" class="score-display">0</div>
+                <button onclick="assignPoints(2)" class="btn-assign">GANÓ LA RONDA</button>
+            </div>
+        </div>
+
+        <div class="strikes-container">
+            <div id="x1" class="mini-x">X</div>
+            <div id="x2" class="mini-x">X</div>
+            <div id="x3" class="mini-x">X</div>
+        </div>
+
+        <div class="question-box"><span id="questionText">...</span></div>
+        <div id="board" class="board"></div>
         
-        <div style="display:flex; flex-direction:column; justify-content:center;">
-             <h2 style="margin:0; color: #FFD700">PUNTOS EN JUEGO</h2>
-             <div id="roundPoints" style="font-size: 4em; color: white;">0</div>
+        <div style="height: 140px;"></div>
+
+        <div class="answer-input-area">
+            <input type="text" id="playerInput" placeholder="Escribe la respuesta..." onkeypress="handleEnter(event)" autocomplete="off">
+            <button onclick="checkAnswer()" class="btn-send">ENVIAR</button>
+            
+            <div class="admin-controls">
+                <button id="btnRevealAll" onclick="revealAllMissing()" class="btn-reveal-all">👁️ REVELAR FALTANTES</button>
+                <button onclick="triggerStrike()" class="btn-small" style="background: #c0392b;">Forzar X</button>
+                <button onclick="nextRound()" class="btn-small">Saltar Ronda</button>
+            </div>
         </div>
+    </div>
 
-        <div class="team-score">
-            <h3 style="margin:0; color:#FF851B">EQUIPO 2</h3>
-            <div id="score2" class="score-display">0</div>
-            <button onclick="addPoints(2)" class="btn-score" style="font-size:0.8em; margin-top:5px;">+ Asignar Puntos</button>
+    <div id="screenEnd" class="screen">
+        <h1>¡FIN DEL JUEGO!</h1>
+        <div class="setup-box" style="border-color: #2ECC40;">
+            <h2 id="winnerName" style="font-size:3em; color:#2ECC40;">GANADOR</h2>
+            <h3 id="finalScoresText">0 - 0</h3>
+            <button onclick="location.reload()" class="btn-start">Jugar Otra Vez</button>
         </div>
     </div>
 
-    <div class="strikes-container">
-        <div id="x1" class="mini-x">X</div>
-        <div id="x2" class="mini-x">X</div>
-        <div id="x3" class="mini-x">X</div>
-    </div>
-
-    <div class="question-box">
-        <span id="questionText">Cargando pregunta...</span>
-    </div>
-
-    <div id="board" class="board">
-        </div>
-
-    <div class="controls">
-        <p style="color: #666; font-size: 0.8em;">PANEL DE CONTROL (Solo para ti)</p>
-        <button onclick="triggerStrike()" class="btn-x">X</button>
-        <button onclick="nextRound()" class="btn-next">Siguiente Ronda ➡</button>
-        <button onclick="resetStrikes()" style="background:#555; color:white;">Borrar X</button>
-    </div>
-
-    <div id="strikeOverlay" class="strike-overlay">
-        <div class="big-x">X</div>
-    </div>
+    <div id="strikeOverlay" class="strike-overlay"><div class="big-x">X</div></div>
 
     <script>
-        // --- BASE DE DATOS DE PREGUNTAS ---
-        // Puedes agregar más rondas aquí
-        const gameData = [
-            {
-                question: "Menciona algo que la gente pierde a menudo",
-                answers: [
-                    { text: "Las Llaves", points: 35 },
-                    { text: "El Celular", points: 20 },
-                    { text: "La Cartera / Dinero", points: 15 },
-                    { text: "El Control Remoto", points: 10 },
-                    { text: "La Paciencia", points: 8 },
-                    { text: "Un Calcetin", points: 5 }
-                ]
-            },
-            {
-                question: "Algo que haces justo después de levantarte",
-                answers: [
-                    { text: "Ir al Baño", points: 40 },
-                    { text: "Lavarse los dientes", points: 20 },
-                    { text: "Ver el celular", points: 15 },
-                    { text: "Tomar Agua/Café", points: 10 },
-                    { text: "Bañarse", points: 8 },
-                    { text: "Apagar alarma", points: 7 }
-                ]
-            },
-            {
-                question: "Un lugar donde no debes hacer ruido",
-                answers: [
-                    { text: "Biblioteca", points: 30 },
-                    { text: "Iglesia / Misa", points: 25 },
-                    { text: "Cine", points: 20 },
-                    { text: "Hospital", points: 15 },
-                    { text: "Funeral", points: 5 },
-                    { text: "Examen", points: 5 }
-                ]
-            },
-            {
-                question: "Algo que le pones a un taco",
-                answers: [
-                    { text: "Salsa", points: 40 },
-                    { text: "Limón", points: 25 },
-                    { text: "Cebolla", points: 10 },
-                    { text: "Cilantro", points: 10 },
-                    { text: "Sal", points: 8 },
-                    { text: "Piña", points: 7 }
-                ]
-            },
-            {
-                question: "Regalo típico del Día de las Madres",
-                answers: [
-                    { text: "Flores / Rosas", points: 35 },
-                    { text: "Ropa", points: 20 },
-                    { text: "Perfume", points: 15 },
-                    { text: "Chocolates", points: 10 },
-                    { text: "Comida / Invitación", points: 10 },
-                    { text: "Electrodomésticos", points: 5 }
-                ]
-            }
+        // --- BASE DE DATOS MASIVA (+50 Rondas) ---
+        const rawData = [
+            // NAVIDAD Y AÑO NUEVO
+            { q: "Comida típica de Navidad", a: [{t:"Pavo", p:35, s:["pavo", "guajolote"]}, {t:"Pierna", p:25, s:["pierna", "cerdo"]}, {t:"Romeritos", p:15, s:["romeritos", "mole"]}, {t:"Bacalao", p:10, s:["bacalao"]}, {t:"Ensalada Manzana", p:8, s:["ensalada de manzana", "manzana"]}, {t:"Tamales", p:7, s:["tamales", "tamal"]}] },
+            { q: "Propósito de Año Nuevo más común", a: [{t:"Hacer dieta/Peso", p:40, s:["dieta", "bajar de peso", "adelgazar", "comer bien"]}, {t:"Hacer Ejercicio", p:25, s:["ejercicio", "gym", "gimnasio", "correr"]}, {t:"Ahorrar", p:15, s:["ahorrar", "dinero", "economizar"]}, {t:"Viajar", p:10, s:["viajar", "vacaciones"]}, {t:"Dejar de fumar", p:5, s:["dejar de fumar", "cigarro"]}, {t:"Aprender inglés", p:5, s:["ingles", "idioma", "estudiar"]}] },
+            { q: "Adorno que se pone en el árbol de Navidad", a: [{t:"Esferas", p:40, s:["esferas", "bolas"]}, {t:"Luces", p:25, s:["luces", "focos", "series"]}, {t:"Estrella", p:15, s:["estrella", "punta"]}, {t:"Lazos/Moños", p:10, s:["lazos", "moños", "cintas"]}, {t:"Campanas", p:5, s:["campanas"]}, {t:"Escarcha", p:5, s:["escarcha", "guirnalda"]}] },
+            
+            // VIDA DIARIA
+            { q: "Algo que se te olvida al salir de casa", a: [{t:"Cubrebocas", p:30, s:["cubrebocas", "mascarilla"]}, {t:"Llaves", p:25, s:["llaves"]}, {t:"Celular", p:20, s:["celular", "telefono"]}, {t:"Cartera", p:10, s:["cartera", "billetera"]}, {t:"Apagar la luz", p:8, s:["apagar luz", "luz"]}, {t:"Cerrar con llave", p:7, s:["cerrar", "puerta"]}] },
+            { q: "Lugar donde siempre hay fila", a: [{t:"Banco", p:35, s:["banco", "cajero"]}, {t:"Tortillería", p:25, s:["tortilleria", "tortillas"]}, {t:"Supermercado", p:15, s:["super", "supermercado", "caja"]}, {t:"Baño público", p:10, s:["baño", "wc"]}, {t:"Cine", p:8, s:["cine", "dulceria"]}, {t:"Seguro Social", p:7, s:["seguro", "imss", "issste", "doctor"]}] },
+            { q: "Cosas que llevas en la cajuela del coche", a: [{t:"Llanta refacción", p:40, s:["llanta", "refaccion", "rueda"]}, {t:"Gato hidraulico", p:20, s:["gato", "herramienta"]}, {t:"Cables corriente", p:15, s:["cables", "pasacorriente"]}, {t:"Extintor", p:10, s:["extintor"]}, {t:"Trapos", p:8, s:["trapo", "limpiador"]}, {t:"Basura", p:7, s:["basura", "botellas"]}] },
+
+            // FAMILIA
+            { q: "¿Qué le dices a tu mamá cuando te llama enojada?", a: [{t:"¿Qué hice?", p:35, s:["que hice", "yo no fui"]}, {t:"Ya voy", p:25, s:["ya voy", "voy"]}, {t:"Ahorita te explico", p:15, s:["te explico", "espera"]}, {t:"No te escucho", p:10, s:["no se oye", "bueno bueno"]}, {t:"Estaba ocupado", p:10, s:["ocupado", "trabajando"]}, {t:"Me equivoqué", p:5, s:["perdon", "lo siento"]}] },
+            { q: "Mueble que hay en la sala", a: [{t:"Sofá/Sillón", p:45, s:["sofa", "sillon", "muebles"]}, {t:"Televisión", p:25, s:["tv", "tele", "television", "pantalla"]}, {t:"Mesa de centro", p:15, s:["mesa", "mesita"]}, {t:"Lámpara", p:8, s:["lampara"]}, {t:"Alfombra", p:4, s:["alfombra", "tapete"]}, {t:"Cuadros", p:3, s:["cuadro", "cuadros", "foto"]}] },
+            { q: "Apodo cariñoso para tu pareja", a: [{t:"Amor/Mi amor", p:40, s:["amor", "mi amor"]}, {t:"Bebé", p:25, s:["bebe"]}, {t:"Gordo/a", p:15, s:["gordo", "gorda", "gordito"]}, {t:"Cielo", p:10, s:["cielo", "mi cielo"]}, {t:"Vida", p:5, s:["vida", "mi vida"]}, {t:"Cariño", p:5, s:["cariño"]}] },
+
+            // GENERAL
+            { q: "Fruta amarilla", a: [{t:"Plátano", p:40, s:["platano", "banana"]}, {t:"Mango", p:25, s:["mango"]}, {t:"Piña", p:15, s:["piña"]}, {t:"Limón", p:10, s:["limon", "limon amarillo"]}, {t:"Melón", p:5, s:["melon"]}, {t:"Guayaba", p:5, s:["guayaba"]}] },
+            { q: "Animal que vive en la selva", a: [{t:"León", p:35, s:["leon"]}, {t:"Mono", p:25, s:["mono", "chango", "gorila"]}, {t:"Tigre", p:15, s:["tigre"]}, {t:"Elefante", p:10, s:["elefante"]}, {t:"Serpiente", p:10, s:["serpiente", "vibora", "boa"]}, {t:"Jirafa", p:5, s:["jirafa"]}] },
+            { q: "Sabor de agua fresca típica", a: [{t:"Horchata", p:35, s:["horchata"]}, {t:"Jamaica", p:30, s:["jamaica"]}, {t:"Limón", p:15, s:["limon"]}, {t:"Tamarindo", p:10, s:["tamarindo"]}, {t:"Melón", p:5, s:["melon"]}, {t:"Sandía", p:5, s:["sandia"]}] },
+            { q: "Algo que compras en la panadería", a: [{t:"Bolillo/Telera", p:35, s:["bolillo", "telera", "birote"]}, {t:"Concha", p:30, s:["concha"]}, {t:"Dona", p:15, s:["dona", "donas"]}, {t:"Cuernito", p:10, s:["cuernito", "cuerno"]}, {t:"Oreja", p:5, s:["oreja"]}, {t:"Pastel", p:5, s:["pastel"]}] },
+            { q: "Instrumento musical de cuerda", a: [{t:"Guitarra", p:45, s:["guitarra"]}, {t:"Violín", p:25, s:["violin"]}, {t:"Piano", p:10, s:["piano"]}, {t:"Arpa", p:10, s:["arpa"]}, {t:"Bajo", p:5, s:["bajo"]}, {t:"Ukelele", p:5, s:["ukelele"]}] },
+            { q: "Superhéroe famoso", a: [{t:"Superman", p:30, s:["superman"]}, {t:"Spiderman", p:25, s:["spiderman", "hombre araña"]}, {t:"Batman", p:20, s:["batman"]}, {t:"Iron Man", p:10, s:["iron man", "ironman"]}, {t:"Hulk", p:10, s:["hulk"]}, {t:"Thor", p:5, s:["thor"]}] },
+            { q: "Cosas que haces en el baño además de tus necesidades", a: [{t:"Bañarse", p:35, s:["bañarse", "ducharse"]}, {t:"Lavarse dientes", p:25, s:["dientes", "cepillarse"]}, {t:"Maquillarse", p:15, s:["maquillarse", "pintarse"]}, {t:"Leer/Celular", p:15, s:["leer", "celular", "ver el cel"]}, {t:"Peinarse", p:5, s:["peinarse"]}, {t:"Rasurarse", p:5, s:["rasurarse", "afeitarse"]}] },
+            { q: "Platillo que se come con cuchara", a: [{t:"Sopa/Caldo", p:50, s:["sopa", "caldo", "consome"]}, {t:"Cereal", p:20, s:["cereal"]}, {t:"Helado", p:15, s:["helado", "nieve"]}, {t:"Pozole", p:10, s:["pozole"]}, {t:"Yogurt", p:3, s:["yogur", "yogurt"]}, {t:"Gelatina", p:2, s:["gelatina"]}] },
+            { q: "Algo que tiene botones", a: [{t:"Camisa", p:35, s:["camisa", "ropa", "blusa"]}, {t:"Control remoto", p:25, s:["control", "control tv"]}, {t:"Teléfono", p:15, s:["telefono", "celular"]}, {t:"Elevador", p:10, s:["elevador", "ascensor"]}, {t:"Teclado", p:10, s:["teclado", "compu"]}, {t:"Pantalón", p:5, s:["pantalon"]}] },
+            { q: "Un color de la bandera de México", a: [{t:"Verde", p:33, s:["verde"]}, {t:"Blanco", p:33, s:["blanco"]}, {t:"Rojo", p:33, s:["rojo"]}, {t:"Café (Águila)", p:1, s:["cafe", "aguila"]}] },
+            { q: "Deporte con pelota", a: [{t:"Fútbol", p:40, s:["futbol", "soccer"]}, {t:"Básquetbol", p:20, s:["basquet", "basquetbol", "baloncesto"]}, {t:"Béisbol", p:15, s:["beis", "beisbol"]}, {t:"Tenis", p:10, s:["tenis"]}, {t:"Voleibol", p:10, s:["voli", "voleibol"]}, {t:"Golf", p:5, s:["golf"]}] },
+            { q: "Animal que pone huevos", a: [{t:"Gallina", p:40, s:["gallina", "pollo"]}, {t:"Pájaro/Ave", p:25, s:["pajaro", "ave"]}, {t:"Tortuga", p:15, s:["tortuga"]}, {t:"Cocodrilo", p:10, s:["cocodrilo"]}, {t:"Serpiente", p:5, s:["serpiente", "vibora"]}, {t:"Pez", p:5, s:["pez", "peces"]}] },
+            { q: "Bebida con alcohol", a: [{t:"Cerveza", p:40, s:["cerveza", "chela"]}, {t:"Tequila", p:30, s:["tequila"]}, {t:"Vino", p:10, s:["vino"]}, {t:"Whisky", p:10, s:["whisky"]}, {t:"Ron", p:5, s:["ron", "bacardi"]}, {t:"Vodka", p:5, s:["vodka"]}] },
+            { q: "Algo que abres todos los días", a: [{t:"Ojos", p:30, s:["ojos"]}, {t:"Puerta", p:25, s:["puerta"]}, {t:"Refrigerador", p:15, s:["refrigerador", "refri"]}, {t:"Boca", p:10, s:["boca"]}, {t:"Redes Sociales", p:10, s:["facebook", "whatsapp", "celular"]}, {t:"Cartera", p:10, s:["cartera"]}] },
+            { q: "Razón para ir al hospital", a: [{t:"Accidente", p:35, s:["accidente", "choque", "caida"]}, {t:"Enfermedad", p:30, s:["enfermedad", "infeccion"]}, {t:"Parto/Nacer", p:20, s:["parto", "bebe", "nacer"]}, {t:"Cirugía", p:10, s:["cirugia", "operacion"]}, {t:"Visita", p:5, s:["visita", "visitar"]}] },
+            { q: "Algo que usas cuando llueve", a: [{t:"Paraguas", p:50, s:["paraguas", "sombrilla"]}, {t:"Impermeable", p:25, s:["impermeable"]}, {t:"Botas", p:15, s:["botas", "botas de lluvia"]}, {t:"Chamarra", p:10, s:["chamarra", "sueter"]}] },
+            
+            // PREVIAS (MANTENIDAS)
+            { q: "Menciona algo que la gente pierde a menudo", a: [{t:"Llaves", p:35, s:["llaves", "llave"]}, {t:"Celular", p:20, s:["celular", "cel"]}, {t:"Cartera", p:15, s:["cartera", "dinero"]}, {t:"Control TV", p:10, s:["control"]}, {t:"Paciencia", p:8, s:["paciencia"]}, {t:"Calcetín", p:5, s:["calcetin", "calcetines"]}] },
+            { q: "Algo que haces justo después de despertar", a: [{t:"Ir al Baño", p:30, s:["baño", "pipi"]}, {t:"Ver el Celular", p:25, s:["celular", "telefono"]}, {t:"Lavarse dientes", p:20, s:["dientes"]}, {t:"Tomar Agua", p:10, s:["agua"]}, {t:"Apagar Alarma", p:8, s:["alarma"]}, {t:"Bañarse", p:7, s:["bañarse"]}] },
+            { q: "Lugar donde no debes hacer ruido", a: [{t:"Biblioteca", p:35, s:["biblioteca"]}, {t:"Iglesia", p:25, s:["iglesia", "misa"]}, {t:"Cine", p:20, s:["cine"]}, {t:"Hospital", p:10, s:["hospital"]}, {t:"Funeral", p:5, s:["funeral"]}, {t:"Examen", p:5, s:["examen", "clase"]}] },
+            { q: "Ingrediente indispensable en un taco", a: [{t:"Tortilla", p:40, s:["tortilla"]}, {t:"Salsa", p:20, s:["salsa"]}, {t:"Carne", p:15, s:["carne"]}, {t:"Limón", p:10, s:["limon"]}, {t:"Cebolla", p:8, s:["cebolla"]}, {t:"Cilantro", p:7, s:["cilantro"]}] },
+            { q: "Regalo típico del Día de las Madres", a: [{t:"Flores", p:30, s:["flores", "rosas"]}, {t:"Ropa", p:20, s:["ropa", "blusa"]}, {t:"Perfume", p:15, s:["perfume"]}, {t:"Comida", p:15, s:["comida", "cena"]}, {t:"Chocolates", p:10, s:["chocolate", "chocolates"]}, {t:"Electrodomésticos", p:10, s:["plancha", "licuadora"]}] },
+            { q: "Excusa para no ir a trabajar", a: [{t:"Enfermedad", p:45, s:["enfermo", "gripa"]}, {t:"Cita Médica", p:20, s:["medico", "doctor"]}, {t:"Hijos enfermos", p:15, s:["hijo", "niños"]}, {t:"Coche falló", p:10, s:["coche", "carro"]}, {t:"Tráfico", p:5, s:["trafico"]}, {t:"Murió familiar", p:5, s:["funeral", "muerte"]}] },
+            { q: "Algo que compras en el cine", a: [{t:"Palomitas", p:60, s:["palomitas"]}, {t:"Refresco", p:25, s:["refresco", "soda"]}, {t:"Nachos", p:5, s:["nachos"]}, {t:"Dulces", p:5, s:["dulces"]}, {t:"Hot Dog", p:3, s:["hot dog", "jocho"]}, {t:"Agua", p:2, s:["agua"]}] },
+            { q: "Fruta de color rojo", a: [{t:"Manzana", p:40, s:["manzana"]}, {t:"Fresa", p:30, s:["fresa"]}, {t:"Sandía", p:15, s:["sandia"]}, {t:"Cereza", p:10, s:["cereza"]}, {t:"Frambuesa", p:3, s:["frambuesa"]}, {t:"Granada", p:2, s:["granada"]}] },
+            { q: "Cosas que encuentras en el baño", a: [{t:"Papel Higiénico", p:35, s:["papel"]}, {t:"Toalla", p:20, s:["toalla"]}, {t:"Jabón", p:15, s:["jabon"]}, {t:"Cepillo", p:10, s:["cepillo"]}, {t:"Espejo", p:10, s:["espejo"]}, {t:"Inodoro", p:10, s:["taza", "wc"]}] },
+            { q: "Villano famoso de Disney", a: [{t:"Maléfica", p:30, s:["malefica"]}, {t:"Scar", p:20, s:["scar"]}, {t:"Jafar", p:15, s:["jafar"]}, {t:"Úrsula", p:15, s:["ursula"]}, {t:"Cruella", p:10, s:["cruella"]}, {t:"Garfio", p:10, s:["garfio"]}] },
+            { q: "Algo que se rompe fácilmente", a: [{t:"Vaso/Vidrio", p:40, s:["vaso", "vidrio", "cristal"]}, {t:"Huevo", p:20, s:["huevo"]}, {t:"Espejo", p:10, s:["espejo"]}, {t:"Corazón", p:10, s:["corazon"]}, {t:"Platos", p:10, s:["plato", "vajilla"]}, {t:"Lentes", p:10, s:["lentes", "gafas"]}] },
+            { q: "Antojito mexicano popular", a: [{t:"Tacos", p:40, s:["tacos"]}, {t:"Quesadillas", p:20, s:["quesadillas"]}, {t:"Gorditas", p:10, s:["gorditas"]}, {t:"Pozole", p:10, s:["pozole"]}, {t:"Tamales", p:10, s:["tamales"]}, {t:"Sopes", p:10, s:["sopes"]}] },
+            { q: "Mentira frecuente", a: [{t:"Ya voy llegando", p:35, s:["ya llego", "voy llegando"]}, {t:"Mañana pago", p:25, s:["pago mañana"]}, {t:"No tengo dinero", p:15, s:["no traigo dinero"]}, {t:"Estoy bien", p:10, s:["estoy bien"]}, {t:"No eres tú", p:10, s:["no eres tu soy yo"]}, {t:"Solo una copa", p:5, s:["la ultima y nos vamos"]}] },
+            { q: "Animal de granja", a: [{t:"Vaca", p:30, s:["vaca"]}, {t:"Cerdo", p:20, s:["cerdo", "puerco"]}, {t:"Gallina", p:20, s:["gallina", "pollo"]}, {t:"Caballo", p:15, s:["caballo"]}, {t:"Oveja", p:10, s:["oveja"]}, {t:"Pato", p:5, s:["pato"]}] },
+            { q: "Cosas que llevas a la playa", a: [{t:"Traje de baño", p:30, s:["traje de baño", "bikini"]}, {t:"Bloqueador", p:25, s:["bloqueador", "bronceador"]}, {t:"Toalla", p:15, s:["toalla"]}, {t:"Lentes", p:10, s:["lentes"]}, {t:"Chanclas", p:10, s:["chanclas", "sandalias"]}, {t:"Sombrilla", p:10, s:["sombrilla"]}] },
+            { q: "Parte del cuerpo que duele golpearse", a: [{t:"Dedo chiquito", p:40, s:["dedo chiquito", "meñique"]}, {t:"Espinilla", p:20, s:["espinilla"]}, {t:"Codo", p:15, s:["codo"]}, {t:"Cabeza", p:10, s:["cabeza"]}, {t:"Rodilla", p:10, s:["rodilla"]}, {t:"Nariz", p:5, s:["nariz"]}] },
+            { q: "Algo que haces antes de dormir", a: [{t:"Lavarse dientes", p:30, s:["dientes"]}, {t:"Poner pijama", p:20, s:["pijama"]}, {t:"Rezar", p:15, s:["rezar"]}, {t:"Ver TV", p:15, s:["tv", "tele"]}, {t:"Leer", p:10, s:["leer"]}, {t:"Apagar luz", p:10, s:["luz"]}] }
         ];
 
-        let currentRound = 0;
+        // --- VARIABLES ---
+        let gameData = [];
+        let currentRoundIndex = 0;
+        let maxRounds = 5;
         let roundScore = 0;
         let team1Total = 0;
         let team2Total = 0;
         let strikes = 0;
+        let audioCtx;
+        let currentAnswers = []; 
 
-        // --- SISTEMA DE SONIDO (Osciladores Web Audio API) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playDing() {
-            // Sonido de Acierto (Tin-tin)
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.5);
-            
-            // Segundo "ding"
-            setTimeout(() => {
-                const osc2 = audioCtx.createOscillator();
-                const gain2 = audioCtx.createGain();
-                osc2.connect(gain2);
-                gain2.connect(audioCtx.destination);
-                osc2.frequency.setValueAtTime(1200, audioCtx.currentTime);
-                gain2.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                osc2.start();
-                osc2.stop(audioCtx.currentTime + 0.5);
-            }, 150);
+        // --- AUDIO ---
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function playTone(freq, type, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+        function playDing() { playTone(880, 'sine', 0.1); setTimeout(()=>playTone(1760, 'sine', 0.4), 100); }
+        function playBuzz() { playTone(100, 'sawtooth', 0.5); }
+        function playFanfare() {
+            setTimeout(()=>playTone(523, 'square', 0.2), 0);
+            setTimeout(()=>playTone(659, 'square', 0.2), 200);
+            setTimeout(()=>playTone(783, 'square', 0.2), 400);
+            setTimeout(()=>playTone(1046, 'square', 0.8), 600);
         }
 
-        function playBuzz() {
-            // Sonido de Error (Buzzer)
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-            oscillator.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
-            
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.5);
+        // --- LOGICA ---
+        function normalize(str) {
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
         }
 
-        // --- LÓGICA DEL JUEGO ---
-        function initGame() {
+        function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+        function startGame() {
+            maxRounds = parseInt(document.getElementById('inputRounds').value);
+            document.getElementById('name1Display').innerText = document.getElementById('inputTeam1').value || "Eq 1";
+            document.getElementById('name2Display').innerText = document.getElementById('inputTeam2').value || "Eq 2";
+
+            gameData = shuffle(JSON.parse(JSON.stringify(rawData)));
+            initAudio(); playDing();
+
+            document.getElementById('screenSetup').classList.remove('active');
+            document.getElementById('screenGame').classList.add('active');
             loadRound(0);
         }
 
         function loadRound(index) {
-            if (index >= gameData.length) {
-                document.getElementById('questionText').innerText = "¡FIN DEL JUEGO! GRACIAS POR JUGAR";
-                document.getElementById('board').innerHTML = "";
-                return;
-            }
+            if (index >= maxRounds || index >= gameData.length) { showEnd(); return; }
             
-            currentRound = index;
-            roundScore = 0;
-            strikes = 0;
+            currentRoundIndex = index;
+            roundScore = 0; strikes = 0;
             resetStrikes();
+            document.getElementById('btnRevealAll').style.display = 'none'; // Ocultar botón revelar
             document.getElementById('roundPoints').innerText = "0";
+            document.getElementById('roundIndicator').innerText = index + 1;
+            document.getElementById('playerInput').value = "";
+            document.getElementById('playerInput').focus();
             
             const data = gameData[index];
-            document.getElementById('questionText').innerText = data.question;
+            document.getElementById('questionText').innerText = data.q;
+            currentAnswers = data.a;
 
             const board = document.getElementById('board');
             board.innerHTML = "";
-
-            // Crear las tarjetas (máximo 8 espacios para diseño, usamos los que tenga la data)
-            data.answers.forEach((ans, i) => {
+            data.a.forEach((ans, i) => {
                 const card = document.createElement('div');
+                card.id = `card-${i}`;
                 card.className = 'answer-card';
-                card.onclick = () => revealCard(card, ans.points);
-
-                const inner = document.createElement('div');
-                inner.className = 'card-inner';
-
-                const cover = document.createElement('div');
-                cover.className = 'hidden-cover';
-                cover.innerText = i + 1; // Número de la respuesta
-
-                const content = document.createElement('div');
-                content.style.display = 'flex';
-                content.style.justifyContent = 'space-between';
-                content.style.width = '100%';
-                content.innerHTML = `<span class="answer-text">${ans.text}</span><span class="answer-points">${ans.points}</span>`;
-
-                card.appendChild(cover);
-                card.appendChild(content); // El contenido está oculto detrás del cover visualmente por el estilo
+                card.innerHTML = `
+                    <div class="hidden-cover">${i+1}</div>
+                    <div class="card-inner">
+                        <span class="answer-text">${ans.t}</span>
+                        <span class="answer-points">${ans.p}</span>
+                    </div>`;
                 board.appendChild(card);
             });
-            
-            // Rellenar vacíos si hay pocas respuestas para mantener la grilla bonita (Opcional)
-            // En este diseño simple, dejamos que se ajuste solo.
+
+            playFanfare();
         }
 
-        function revealCard(cardElement, points) {
-            if (cardElement.classList.contains('revealed')) return; // Ya estaba abierta
+        function handleEnter(e) { if(e.key === 'Enter') checkAnswer(); }
 
-            cardElement.classList.add('revealed');
+        function checkAnswer() {
+            const inputEl = document.getElementById('playerInput');
+            const userText = normalize(inputEl.value);
+            inputEl.value = ""; inputEl.focus();
+            if (!userText) return;
+
+            let found = false;
+            let alreadyRevealed = false;
+
+            currentAnswers.forEach((ans, index) => {
+                if (ans.s.some(syn => normalize(syn) === userText)) {
+                    const card = document.getElementById(`card-${index}`);
+                    if (card.classList.contains('revealed')) {
+                        alreadyRevealed = true;
+                    } else {
+                        revealCard(card, ans.p);
+                        found = true;
+                    }
+                }
+            });
+
+            if (alreadyRevealed) {
+                // Ya estaba
+            } else if (!found) {
+                triggerStrike();
+            }
+        }
+
+        function revealCard(card, pts) {
+            card.classList.add('revealed');
             playDing();
-            
-            // Sumar puntos al acumulado de la ronda
-            roundScore += points;
-            
-            // Animación de conteo
-            animateValue("roundPoints", parseInt(document.getElementById('roundPoints').innerText), roundScore, 1000);
+            roundScore += pts;
+            document.getElementById('roundPoints').innerText = roundScore;
         }
 
-        function addPoints(team) {
-            if (roundScore === 0) {
-                alert("Primero revela las respuestas para acumular puntos.");
-                return;
-            }
-
-            if (team === 1) {
-                team1Total += roundScore;
-                document.getElementById('score1').innerText = team1Total;
-            } else {
-                team2Total += roundScore;
-                document.getElementById('score2').innerText = team2Total;
-            }
-            
-            // Reiniciar puntos acumulados para la siguiente asignación o ronda
-            // Normalmente en el juego real se roban los puntos, aquí simplificamos:
-            // Al asignar, se asume que se acaba la ronda o se robaron los puntos.
-            alert("Puntos asignados al Equipo " + team + ". Pasando a siguiente ronda...");
-            nextRound();
+        // FUNCION PARA REVELAR FALTANTES (SIN PUNTOS)
+        function revealAllMissing() {
+            currentAnswers.forEach((ans, index) => {
+                const card = document.getElementById(`card-${index}`);
+                if (!card.classList.contains('revealed')) {
+                    card.classList.add('revealed');
+                    // NO SUMAMOS PUNTOS AQUI
+                }
+            });
+            document.getElementById('btnRevealAll').style.display = 'none'; // Ocultar botón
         }
 
         function triggerStrike() {
             playBuzz();
-            
-            // Mostrar Overlay Gigante
-            const overlay = document.getElementById('strikeOverlay');
-            overlay.style.display = 'flex';
-            setTimeout(() => { overlay.style.display = 'none'; }, 1000);
-
-            // Marcar las X pequeñas
+            const ov = document.getElementById('strikeOverlay');
+            ov.style.display = 'flex';
+            setTimeout(()=> {
+                ov.style.display='none';
+                document.getElementById('playerInput').focus();
+            }, 800);
             strikes++;
-            if(strikes <= 3) {
-                document.getElementById(`x${strikes}`).classList.add('active');
+            if(strikes<=3) document.getElementById(`x${strikes}`).classList.add('active');
+            
+            // SI LLEGAMOS A 3 STRIKES, MOSTRAMOS EL BOTON
+            if(strikes === 3) {
+                document.getElementById('btnRevealAll').style.display = 'block';
             }
         }
 
         function resetStrikes() {
-            strikes = 0;
-            document.querySelectorAll('.mini-x').forEach(el => el.classList.remove('active'));
+            strikes=0; 
+            document.querySelectorAll('.mini-x').forEach(el=>el.classList.remove('active'));
         }
 
-        function nextRound() {
-            loadRound(currentRound + 1);
+        function assignPoints(team) {
+            if (team === 1) { team1Total += roundScore; document.getElementById('score1').innerText=team1Total; }
+            else { team2Total += roundScore; document.getElementById('score2').innerText=team2Total; }
+            nextRound();
         }
 
-        // Utilidad para animar números
-        function animateValue(id, start, end, duration) {
-            const obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
+        function nextRound() { loadRound(currentRoundIndex+1); }
+
+        function showEnd() {
+            document.getElementById('screenGame').classList.remove('active');
+            document.getElementById('screenEnd').classList.add('active');
+            let t1 = document.getElementById('inputTeam1').value;
+            let t2 = document.getElementById('inputTeam2').value;
+            let winner = (team1Total > team2Total) ? t1 : (team2Total > team1Total) ? t2 : "¡EMPATE!";
+            document.getElementById('winnerName').innerText = winner;
+            document.getElementById('finalScoresText').innerText = `${t1}: ${team1Total} - ${t2}: ${team2Total}`;
+            playFanfare();
         }
-
-        // Iniciar
-        window.onload = initGame;
-
     </script>
 </body>
 </html>
