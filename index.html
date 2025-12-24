@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Mexicanos Dijeron</title>
+    <style>
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background: radial-gradient(circle, #001f3f, #000814);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #FFD700;
+            text-shadow: 4px 4px #000;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        /* --- MARCADOR --- */
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            background: #003366;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #FFD700;
+        }
+
+        .team-score {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 3em;
+            background: black;
+            color: #ff0000;
+            padding: 10px 30px;
+            border: 2px solid grey;
+            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+        }
+
+        /* --- PREGUNTA --- */
+        .question-box {
+            background: linear-gradient(to bottom, #0074D9, #001f3f);
+            padding: 20px;
+            border-radius: 20px;
+            border: 4px solid white;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- TABLERO DE RESPUESTAS --- */
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Dos columnas */
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .answer-card {
+            background: linear-gradient(to bottom, #004080, #001f3f);
+            border: 2px solid white;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            cursor: pointer;
+            position: relative;
+            perspective: 1000px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .answer-card:hover { transform: scale(1.02); }
+
+        /* Estilos para ocultar/mostrar */
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hidden-cover {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                #003366,
+                #003366 10px,
+                #002244 10px,
+                #002244 20px
+            );
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: #FFD700;
+            z-index: 2;
+            transition: transform 0.6s;
+            backface-visibility: hidden;
+        }
+
+        .revealed .hidden-cover {
+            transform: rotateX(180deg); /* Efecto voltear */
+            opacity: 0;
+        }
+
+        .answer-text { font-size: 1.5em; text-transform: uppercase; }
+        .answer-points { font-size: 1.8em; color: #FFD700; border-left: 2px solid white; padding-left: 15px; }
+
+        /* --- BOTONES DE CONTROL --- */
+        .controls {
+            margin-top: 40px;
+            padding: 20px;
+            background: #111;
+            border-top: 2px solid #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-x { background-color: #ff4136; color: white; width: 80px; height: 80px; font-size: 2em; border-radius: 50%; border: 4px solid #8a1c14;}
+        .btn-next { background-color: #2ECC40; color: white; }
+        .btn-score { background-color: #FFDC00; color: black; }
+
+        /* --- X GIGANTE (STRIKE) --- */
+        .strike-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            display: none;
+        }
+        .big-x {
+            font-size: 25vw;
+            color: red;
+            font-family: sans-serif;
+            text-shadow: 0 0 20px white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* Indicador de Strike pequeño */
+        .strikes-container { display: flex; justify-content: center; margin-bottom: 10px; height: 50px;}
+        .mini-x { color: red; font-size: 3em; margin: 0 10px; opacity: 0.2; }
+        .mini-x.active { opacity: 1; text-shadow: 0 0 10px red; }
+
+    </style>
+</head>
+<body>
+
+    <h1>100 MEXICANOS DIJERON</h1>
+
+    <div class="scoreboard">
+        <div class="team-score">
+            <h3 style="margin:0; color:#7FDBFF">EQUIPO 1</h3>
+            <div id="score1" class="score-display">0</div>
+            <button onclick="addPoints(1)" class="btn-score" style="font-size:0.8em; margin-top:5px;">+ Asignar Puntos</button>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; justify-content:center;">
+             <h2 style="margin:0; color: #FFD700">PUNTOS EN JUEGO</h2>
+             <div id="roundPoints" style="font-size: 4em; color: white;">0</div>
+        </div>
+
+        <div class="team-score">
+            <h3 style="margin:0; color:#FF851B">EQUIPO 2</h3>
+            <div id="score2" class="score-display">0</div>
+            <button onclick="addPoints(2)" class="btn-score" style="font-size:0.8em; margin-top:5px;">+ Asignar Puntos</button>
+        </div>
+    </div>
+
+    <div class="strikes-container">
+        <div id="x1" class="mini-x">X</div>
+        <div id="x2" class="mini-x">X</div>
+        <div id="x3" class="mini-x">X</div>
+    </div>
+
+    <div class="question-box">
+        <span id="questionText">Cargando pregunta...</span>
+    </div>
+
+    <div id="board" class="board">
+        </div>
+
+    <div class="controls">
+        <p style="color: #666; font-size: 0.8em;">PANEL DE CONTROL (Solo para ti)</p>
+        <button onclick="triggerStrike()" class="btn-x">X</button>
+        <button onclick="nextRound()" class="btn-next">Siguiente Ronda ➡</button>
+        <button onclick="resetStrikes()" style="background:#555; color:white;">Borrar X</button>
+    </div>
+
+    <div id="strikeOverlay" class="strike-overlay">
+        <div class="big-x">X</div>
+    </div>
+
+    <script>
+        // --- BASE DE DATOS DE PREGUNTAS ---
+        // Puedes agregar más rondas aquí
+        const gameData = [
+            {
+                question: "Menciona algo que la gente pierde a menudo",
+                answers: [
+                    { text: "Las Llaves", points: 35 },
+                    { text: "El Celular", points: 20 },
+                    { text: "La Cartera / Dinero", points: 15 },
+                    { text: "El Control Remoto", points: 10 },
+                    { text: "La Paciencia", points: 8 },
+                    { text: "Un Calcetin", points: 5 }
+                ]
+            },
+            {
+                question: "Algo que haces justo después de levantarte",
+                answers: [
+                    { text: "Ir al Baño", points: 40 },
+                    { text: "Lavarse los dientes", points: 20 },
+                    { text: "Ver el celular", points: 15 },
+                    { text: "Tomar Agua/Café", points: 10 },
+                    { text: "Bañarse", points: 8 },
+                    { text: "Apagar alarma", points: 7 }
+                ]
+            },
+            {
+                question: "Un lugar donde no debes hacer ruido",
+                answers: [
+                    { text: "Biblioteca", points: 30 },
+                    { text: "Iglesia / Misa", points: 25 },
+                    { text: "Cine", points: 20 },
+                    { text: "Hospital", points: 15 },
+                    { text: "Funeral", points: 5 },
+                    { text: "Examen", points: 5 }
+                ]
+            },
+            {
+                question: "Algo que le pones a un taco",
+                answers: [
+                    { text: "Salsa", points: 40 },
+                    { text: "Limón", points: 25 },
+                    { text: "Cebolla", points: 10 },
+                    { text: "Cilantro", points: 10 },
+                    { text: "Sal", points: 8 },
+                    { text: "Piña", points: 7 }
+                ]
+            },
+            {
+                question: "Regalo típico del Día de las Madres",
+                answers: [
+                    { text: "Flores / Rosas", points: 35 },
+                    { text: "Ropa", points: 20 },
+                    { text: "Perfume", points: 15 },
+                    { text: "Chocolates", points: 10 },
+                    { text: "Comida / Invitación", points: 10 },
+                    { text: "Electrodomésticos", points: 5 }
+                ]
+            }
+        ];
+
+        let currentRound = 0;
+        let roundScore = 0;
+        let team1Total = 0;
+        let team2Total = 0;
+        let strikes = 0;
+
+        // --- SISTEMA DE SONIDO (Osciladores Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playDing() {
+            // Sonido de Acierto (Tin-tin)
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+            
+            // Segundo "ding"
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                gain2.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.5);
+            }, 150);
+        }
+
+        function playBuzz() {
+            // Sonido de Error (Buzzer)
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+            oscillator.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+            
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        }
+
+        // --- LÓGICA DEL JUEGO ---
+        function initGame() {
+            loadRound(0);
+        }
+
+        function loadRound(index) {
+            if (index >= gameData.length) {
+                document.getElementById('questionText').innerText = "¡FIN DEL JUEGO! GRACIAS POR JUGAR";
+                document.getElementById('board').innerHTML = "";
+                return;
+            }
+            
+            currentRound = index;
+            roundScore = 0;
+            strikes = 0;
+            resetStrikes();
+            document.getElementById('roundPoints').innerText = "0";
+            
+            const data = gameData[index];
+            document.getElementById('questionText').innerText = data.question;
+
+            const board = document.getElementById('board');
+            board.innerHTML = "";
+
+            // Crear las tarjetas (máximo 8 espacios para diseño, usamos los que tenga la data)
+            data.answers.forEach((ans, i) => {
+                const card = document.createElement('div');
+                card.className = 'answer-card';
+                card.onclick = () => revealCard(card, ans.points);
+
+                const inner = document.createElement('div');
+                inner.className = 'card-inner';
+
+                const cover = document.createElement('div');
+                cover.className = 'hidden-cover';
+                cover.innerText = i + 1; // Número de la respuesta
+
+                const content = document.createElement('div');
+                content.style.display = 'flex';
+                content.style.justifyContent = 'space-between';
+                content.style.width = '100%';
+                content.innerHTML = `<span class="answer-text">${ans.text}</span><span class="answer-points">${ans.points}</span>`;
+
+                card.appendChild(cover);
+                card.appendChild(content); // El contenido está oculto detrás del cover visualmente por el estilo
+                board.appendChild(card);
+            });
+            
+            // Rellenar vacíos si hay pocas respuestas para mantener la grilla bonita (Opcional)
+            // En este diseño simple, dejamos que se ajuste solo.
+        }
+
+        function revealCard(cardElement, points) {
+            if (cardElement.classList.contains('revealed')) return; // Ya estaba abierta
+
+            cardElement.classList.add('revealed');
+            playDing();
+            
+            // Sumar puntos al acumulado de la ronda
+            roundScore += points;
+            
+            // Animación de conteo
+            animateValue("roundPoints", parseInt(document.getElementById('roundPoints').innerText), roundScore, 1000);
+        }
+
+        function addPoints(team) {
+            if (roundScore === 0) {
+                alert("Primero revela las respuestas para acumular puntos.");
+                return;
+            }
+
+            if (team === 1) {
+                team1Total += roundScore;
+                document.getElementById('score1').innerText = team1Total;
+            } else {
+                team2Total += roundScore;
+                document.getElementById('score2').innerText = team2Total;
+            }
+            
+            // Reiniciar puntos acumulados para la siguiente asignación o ronda
+            // Normalmente en el juego real se roban los puntos, aquí simplificamos:
+            // Al asignar, se asume que se acaba la ronda o se robaron los puntos.
+            alert("Puntos asignados al Equipo " + team + ". Pasando a siguiente ronda...");
+            nextRound();
+        }
+
+        function triggerStrike() {
+            playBuzz();
+            
+            // Mostrar Overlay Gigante
+            const overlay = document.getElementById('strikeOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.style.display = 'none'; }, 1000);
+
+            // Marcar las X pequeñas
+            strikes++;
+            if(strikes <= 3) {
+                document.getElementById(`x${strikes}`).classList.add('active');
+            }
+        }
+
+        function resetStrikes() {
+            strikes = 0;
+            document.querySelectorAll('.mini-x').forEach(el => el.classList.remove('active'));
+        }
+
+        function nextRound() {
+            loadRound(currentRound + 1);
+        }
+
+        // Utilidad para animar números
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Iniciar
+        window.onload = initGame;
+
+    </script>
+</body>
+</html>
